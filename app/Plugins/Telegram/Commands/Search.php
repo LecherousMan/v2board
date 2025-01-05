@@ -53,20 +53,30 @@ class Search extends Telegram {
             $used = $up + $down; // 上行 + 下行
             $remaining = $transferEnable - $used; // 剩余流量
             $expiredtime = $matchedUser->expired_at;
+
             // 格式化为保留两位小数
             $transferEnable = number_format($transferEnable, 2);
             $up = number_format($up, 2);
             $down = number_format($down, 2);
             $used = number_format($used, 2);
             $remaining = number_format($remaining, 2);
-            #$dateline=date("Y-m-d H:i:s", $expiredtime);
-                // 判断时间戳是否为0，如果是0则显示“长期有效”
+
+            // 判断到期时间
             if ($expiredtime == 0) {
                 $dateline = "长期有效";
             } else {
-                // 将时间戳转换为日期格式
-                $dateline = date("Y-m-d H:i:s", $expiredtime);
+                // 当前时间戳
+                $currentTime = time();
+                
+                // 如果到期时间小于当前时间，显示已到期
+                if ($expiredtime < $currentTime) {
+                    $dateline = "已到期";
+                } else {
+                    // 将时间戳转换为日期格式
+                    $dateline = date("Y-m-d H:i:s", $expiredtime);
+                }
             }
+
             // 添加到查询结果文本
             $text .= "邮箱：{$matchedUser->email}\n";
             $text .= "套餐流量：{$transferEnable} GB\n";
